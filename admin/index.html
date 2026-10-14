@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#110b09">
+
+  <title>ViralEra Admin | Media Studio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+
+<body>
+  <div class="admin-background"></div>
+
+  <header class="admin-topbar">
+    <a href="../index.html" class="admin-brand">
+      <span class="admin-logo">V</span>
+      <span>VIRAL<span>ERA</span><small>MEDIA STUDIO</small></span>
+    </a>
+
+    <a href="../index.html" class="view-site">View Website ↗</a>
+  </header>
+
+  <main class="admin-main">
+
+    <!-- Login screen -->
+    <section class="login-card" id="loginSection">
+      <div class="login-symbol">✦</div>
+      <p class="eyebrow">RESTRICTED ACCESS</p>
+      <h1>Welcome <span>Back.</span></h1>
+      <p class="muted">Sign in to manage your ViralEra content.</p>
+
+      <form id="loginForm">
+        <label for="adminEmail">Admin Email</label>
+        <input
+          id="adminEmail"
+          name="email"
+          type="email"
+          placeholder="Enter admin email"
+          autocomplete="username"
+          required
+        >
+
+        <label for="adminPassword">Password</label>
+        <input
+          id="adminPassword"
+          name="password"
+          type="password"
+          placeholder="Enter password"
+          autocomplete="current-password"
+          required
+        >
+
+        <button type="submit" class="gold-button" id="loginButton">
+          Sign In <span>→</span>
+        </button>
+
+        <p class="form-message" id="loginMessage" role="status"></p>
+      </form>
+
+      <p class="security-note">
+        🔒 Authorized administrator access only
+      </p>
+    </section>
+
+    <!-- Dashboard: hidden until authenticated -->
+    <section class="dashboard" id="dashboardSection" hidden>
+
+      <div class="dashboard-heading">
+        <div>
+          <p class="eyebrow">CONTENT MANAGEMENT</p>
+          <h1>Media <span>Studio.</span></h1>
+          <p class="muted">Upload and manage your photos and videos.</p>
+        </div>
+
+        <button type="button" id="logoutButton" class="logout-button">
+          Sign Out
+        </button>
+      </div>
+
+      <div class="admin-stats">
+        <div class="stat-card">
+          <span>Total Media</span>
+          <strong id="totalMedia">0</strong>
+        </div>
+        <div class="stat-card">
+          <span>Published</span>
+          <strong id="publishedMedia">0</strong>
+        </div>
+        <div class="stat-card">
+          <span>Drafts</span>
+          <strong id="draftMedia">0</strong>
+        </div>
+      </div>
+
+      <div class="admin-layout">
+
+        <!-- Upload form -->
+        <section class="admin-card">
+          <div class="card-heading">
+            <div>
+              <p class="eyebrow">CREATE CONTENT</p>
+              <h2>Upload <span>Media</span></h2>
+            </div>
+            <span class="heading-icon">＋</span>
+          </div>
+
+          <form id="uploadForm">
+
+            <label for="mediaFile">Choose Photo or Video</label>
+            <input
+              id="mediaFile"
+              name="mediaFile"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+              required
+            >
+
+            <p class="field-note">
+              JPG, PNG, WebP, GIF, MP4, WebM or MOV.
+            </p>
+
+            <div id="filePreview" class="file-preview" hidden></div>
+
+            <label for="mediaTitle">Title</label>
+            <input
+              id="mediaTitle"
+              name="title"
+              type="text"
+              maxlength="100"
+              placeholder="Enter a catchy title"
+              required
+            >
+
+            <label for="mediaDescription">Description</label>
+            <textarea
+              id="mediaDescription"
+              name="description"
+              rows="3"
+              maxlength="500"
+              placeholder="Write a short description..."
+            ></textarea>
+
+            <label for="mediaCategory">Category</label>
+            <select id="mediaCategory" name="category" required>
+              <option value="viral">🔥 Viral</option>
+              <option value="romantic">♥ Romantic</option>
+              <option value="love">Love</option>
+              <option value="sad">Sad</option>
+              <option value="attitude">Attitude</option>
+              <option value="funny">Funny</option>
+            </select>
+
+            <label for="thumbnailFile">Video Thumbnail (optional)</label>
+            <input
+              id="thumbnailFile"
+              name="thumbnailFile"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+            >
+
+            <label class="publish-toggle" for="publishMedia">
+              <input id="publishMedia" type="checkbox" checked>
+              <span>Publish immediately</span>
+            </label>
+
+            <button
+              type="submit"
+              class="gold-button"
+              id="uploadButton"
+            >
+              Upload to ViralEra <span>↑</span>
+            </button>
+
+            <div class="upload-progress" id="uploadProgress" hidden>
+              <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+              <p id="progressText">Preparing upload...</p>
+            </div>
+
+            <p class="form-message" id="uploadMessage" role="status"></p>
+          </form>
+        </section>
+
+        <!-- Media management -->
+        <section class="admin-card media-management">
+          <div class="card-heading">
+            <div>
+              <p class="eyebrow">YOUR COLLECTION</p>
+              <h2>Manage <span>Media</span></h2>
+            </div>
+          </div>
+
+          <label for="adminSearch">Find uploaded content</label>
+          <input
+            id="adminSearch"
+            type="search"
+            placeholder="Search by title..."
+          >
+
+          <div id="adminMediaList" class="admin-media-list">
+            <p class="muted">Loading your media...</p>
+          </div>
+        </section>
+
+      </div>
+
+      <p class="dashboard-footer">
+        ViralEra Media Studio · Manage your content responsibly.
+      </p>
+    </section>
+  </main>
+
+  <script type="module" src="../js/admin.js"></script>
+</body>
+</html>

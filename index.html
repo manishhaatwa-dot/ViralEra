@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#211711">
+  <meta name="description" content="Discover viral videos, romantic moments, love photos, sad status and attitude content on ViralEra by Opnora.">
+
+  <title>ViralEra — Viral Photos & Videos | Opnora</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    :root {
+      --ve-bg: #140e0a;
+      --ve-card: #211711;
+      --ve-gold: #e7c477;
+      --ve-text: #fff7e9;
+      --ve-muted: #c1b09a;
+      --ve-border: rgba(231,196,119,.2);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ve-text);
+      background:
+        radial-gradient(ellipse at top, #392417 0%, transparent 45%),
+        var(--ve-bg);
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    a { color: inherit; text-decoration: none; }
+
+    .ve-container {
+      width: min(1180px, 92%);
+      margin: auto;
+    }
+
+    .ve-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(20,14,10,.94);
+      border-bottom: 1px solid var(--ve-border);
+      backdrop-filter: blur(16px);
+    }
+
+    .ve-nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .ve-brand {
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(24px, 4vw, 34px);
+      font-weight: 800;
+      letter-spacing: -.8px;
+      color: var(--ve-gold);
+      text-shadow: 0 0 24px rgba(231,196,119,.2);
+    }
+
+    .ve-brand small {
+      display: block;
+      margin-top: 2px;
+      font: 10px Inter, sans-serif;
+      letter-spacing: 2px;
+      color: var(--ve-muted);
+    }
+
+    .ve-admin-link {
+      padding: 10px 16px;
+      border: 1px solid var(--ve-border);
+      border-radius: 30px;
+      color: var(--ve-gold);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .ve-hero {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      margin: 28px auto 30px;
+      padding: clamp(28px, 6vw, 68px) 24px;
+      text-align: center;
+      border: 1px solid var(--ve-border);
+      border-radius: 24px;
+      background:
+        linear-gradient(110deg, rgba(20,14,10,.97), rgba(48,29,18,.8)),
+        url("https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1600&q=80") center/cover;
+    }
+
+    .ve-eyebrow {
+      color: var(--ve-gold);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .ve-hero h1 {
+      margin: 16px 0 12px;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(35px, 7vw, 68px);
+      line-height: 1.1;
+    }
+
+    .ve-hero h1 span {
+      color: var(--ve-gold);
+    }
+
+    .ve-hero p {
+      max-width: 580px;
+      margin: 0 auto;
+      color: var(--ve-muted);
+      line-height: 1.8;
+    }
+
+    .ve-search {
+      display: flex;
+      width: min(560px, 100%);
+      margin: 25px auto 0;
+      padding: 5px;
+      border: 1px solid var(--ve-border);
+      border-radius: 50px;
+      background: rgba(0,0,0,.3);
+    }
+
+    .ve-search input {
+      min-width: 0;
+      flex: 1;
+      padding: 12px 16px;
+      border: 0;
+      outline: 0;
+      color: white;
+      background: transparent;
+    }
+
+    .ve-search input::placeholder { color: #b9a68d; }
+
+    .ve-search button {
+      padding: 12px 19px;
+      color: #211711;
+      background: var(--ve-gold);
+      border: 0;
+      border-radius: 30px;
+      font-weight: 800;
+    }
+
+    .ve-section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 35px 0 18px;
+    }
+
+    .ve-section-heading h2 {
+      margin: 0;
+      font-size: clamp(21px, 4vw, 29px);
+    }
+
+    .ve-section-heading span {
+      color: var(--ve-muted);
+      font-size: 12px;
+    }
+
+    .ve-categories {
+      display: flex;
+      gap: 9px;
+      padding: 3px 0 12px;
+      margin-bottom: 15px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .ve-category {
+      flex: 0 0 auto;
+      padding: 10px 16px;
+      border: 1px solid var(--ve-border);
+      border-radius: 30px;
+      color: var(--ve-muted);
+      background: var(--ve-card);
+      font-size: 13px;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+
+    .ve-category:hover,
+    .ve-category.active {
+      color: #211711;
+      background: var(--ve-gold);
+      border-color: var(--ve-gold);
+    }
+
+    #galleryGrid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      min-height: 120px;
+    }
+
+    .ve-media-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--ve-border);
+      border-radius: 16px;
+      background: var(--ve-card);
+      transition: transform .2s ease, border-color .2s ease;
+    }
+
+    .ve-media-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(231,196,119,.65);
+    }
+
+    .ve-media-open {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: #0c0806;
+      text-align: left;
+    }
+
+    .ve-media-thumb {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      background: #17100b;
+    }
+
+    .ve-card-placeholder {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 3 / 4;
+      color: var(--ve-gold);
+      font-size: 42px;
+      background: linear-gradient(135deg, #392417, #140e0a);
+    }
+
+    .ve-media-type {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 6px 9px;
+      color: #211711;
+      background: var(--ve-gold);
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .ve-play-icon {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 38px;
+      text-shadow: 0 2px 12px #000;
+      pointer-events: none;
+    }
+
+    .ve-card-info { padding: 13px; }
+
+    .ve-card-info h3 {
+      margin: 0 0 7px;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .ve-card-info p {
+      margin: 0;
+      color: var(--ve-muted);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .ve-card-category {
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--ve-gold);
+      font-size: 11px;
+      text-transform: capitalize;
+    }
+
+    .ve-empty {
+      grid-column: 1 / -1;
+      padding: 40px 15px;
+      color: var(--ve-muted);
+      text-align: center;
+      border: 1px dashed var(--ve-border);
+      border-radius: 16px;
+      line-height: 1.8;
+    }
+
+    .ve-footer {
+      margin-top: 55px;
+      padding: 28px 0;
+      border-top: 1px solid var(--ve-border);
+      text-align: center;
+      color: var(--ve-muted);
+      font-size: 12px;
+      line-height: 2;
+    }
+
+    .ve-footer strong { color: var(--ve-gold); }
+
+    /* Viewer */
+    #mediaViewer[hidden] { display: none !important; }
+
+    #mediaViewer:not([hidden]) {
+      position: fixed;
+      z-index: 9999;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 64px 16px 22px;
+      overflow-y: auto;
+      background: rgba(10,7,5,.97);
+      backdrop-filter: blur(12px);
+    }
+
+    #viewerContent {
+      width: 100%;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .ve-media-stage {
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      overflow: hidden;
+      background: #100b08;
+      border-radius: 12px;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    .ve-media-stage img,
+    .ve-media-stage video {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      max-height: 76vh;
+      object-fit: contain;
+      border-radius: 12px;
+      -webkit-user-drag: none;
+    }
+
+    .ve-moving-watermark {
+      position: absolute;
+      z-index: 5;
+      top: 12%;
+      left: 5%;
+      max-width: 90%;
+      color: rgba(255,220,145,.76);
+      font-family: Arial, sans-serif;
+      font-size: clamp(12px, 2.2vw, 23px);
+      font-weight: 800;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+      text-shadow: 0 1px 3px #000, 0 0 8px rgba(0,0,0,.8);
+      animation: ve-watermark-move 13s linear infinite alternate;
+    }
+
+    @keyframes ve-watermark-move {
+      0% { top: 10%; left: 5%; }
+      25% { top: 75%; left: 55%; }
+      50% { top: 45%; left: 8%; }
+      75% { top: 15%; left: 52%; }
+      100% { top: 72%; left: 12%; }
+    }
+
+    #viewerClose {
+      position: fixed;
+      z-index: 10001;
+      top: 12px;
+      right: 14px;
+      width: 44px;
+      height: 44px;
+      color: var(--ve-gold);
+      background: #211711;
+      border: 1px solid var(--ve-border);
+      border-radius: 50%;
+      font-size: 26px;
+    }
+
+    #viewerTitle {
+      margin: 16px 0 6px;
+      color: var(--ve-gold);
+      text-align: center;
+    }
+
+    #viewerDescription {
+      color: var(--ve-muted);
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    body.viewer-open { overflow: hidden; }
+
+    @media (max-width: 900px) {
+      #galleryGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 600px) {
+      .ve-nav { min-height: 66px; }
+      .ve-hero { border-radius: 17px; margin-top: 18px; }
+      #galleryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+      .ve-card-info { padding: 10px; }
+      .ve-card-info h3 { font-size: 13px; }
+      .ve-media-stage img, .ve-media-stage video { max-height: 70vh; }
+      .ve-moving-watermark { letter-spacing: .4px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ve-moving-watermark { animation-duration: 30s; }
+      .ve-media-card { transition: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="ve-header">
+    <div class="ve-container ve-nav">
+      <a class="ve-brand" href="./" aria-label="ViralEra Home">
+        ViralEra
+        <small>VIRALERA.OPNORA.COM</small>
+      </a>
+
+      <a class="ve-admin-link" href="admin/index.html">
+        Admin Login
+      </a>
+    </div>
+  </header>
+
+  <main class="ve-container">
+    <section class="ve-hero">
+      <div class="ve-eyebrow">A World of Moments</div>
+      <h1>Discover What's <span>Viral</span></h1>
+      <p>
+        Explore photos, videos, love moments, attitude status and trending
+        content — all in one place.
+      </p>
+
+      <form class="ve-search" id="searchForm" role="search">
+        <input
+          id="gallerySearch"
+          type="search"
+          placeholder="Search photos, videos, categories..."
+          aria-label="Search gallery"
+          autocomplete="off"
+        >
+        <button type="submit">Search</button>
+      </form>
+    </section>
+
+    <section aria-labelledby="galleryHeading">
+      <div class="ve-section-heading">
+        <h2 id="galleryHeading">Explore Gallery</h2>
+        <span id="galleryCount">Loading media...</span>
+      </div>
+
+      <nav class="ve-categories" id="categoryFilters" aria-label="Media categories">
+        <button class="ve-category active" type="button" data-category="all">All</button>
+        <button class="ve-category" type="button" data-category="video">Videos</button>
+        <button class="ve-category" type="button" data-category="photo">Photos</button>
+        <button class="ve-category" type="button" data-category="viral">Viral</button>
+        <button class="ve-category" type="button" data-category="romantic">Romantic</button>
+        <button class="ve-category" type="button" data-category="love">Love</button>
+        <button class="ve-category" type="button" data-category="sad">Sad</button>
+        <button class="ve-category" type="button" data-category="attitude">Attitude</button>
+        <button class="ve-category" type="button" data-category="funny">Funny</button>
+      </nav>
+
+      <div id="galleryGrid" aria-live="polite" aria-busy="true">
+        <div class="ve-empty">Loading ViralEra gallery...</div>
+      </div>
+
+      <div id="emptyState" class="ve-empty" hidden>
+        <strong>No media found</strong>
+        <p>Try another search or category.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ve-footer">
+    <div class="ve-container">
+      <strong>ViralEra.opnora.com</strong><br>
+      A media platform by Opnora.<br>
+      © <span id="currentYear"></span> Opnora. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Photo and video viewer -->
+  <section id="mediaViewer" hidden role="dialog" aria-modal="true" aria-label="Media viewer">
+    <button id="viewerClose" type="button" aria-label="Close viewer">×</button>
+
+    <div class="ve-viewer-inner">
+      <div id="viewerContent"></div>
+      <h2 id="viewerTitle"></h2>
+      <p id="viewerDescription"></p>
+    </div>
+  </section>
+
+  <script>
+    document.getElementById("currentYear").textContent =
+      new Date().getFullYear();
+
+    document.getElementById("searchForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      document.getElementById("gallerySearch").dispatchEvent(
+        new Event("input", { bubbles: true })
+      );
+    });
+  </script>
+
+  <script type="module" src="js/gallery.js"></script>
+  <script type="module" src="js/player.js"></script>
+</body>
+</html>
