@@ -1,6 +1,8 @@
 import {
   collection,
-  onSnapshot
+  onSnapshot,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 import {
@@ -19,6 +21,10 @@ let activeCategory = "all";
 let searchText = "";
 let unsubscribe = null;
 
+function normalize(value = "") {
+  return String(value).trim().toLowerCase();
+}
+
 function escapeHTML(value = "") {
   return String(value).replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
@@ -29,23 +35,15 @@ function escapeHTML(value = "") {
   })[char]);
 }
 
-function normalize(value = "") {
-  return String(value).trim().toLowerCase();
-}
-
 function formatCategory(category = "") {
   return String(category)
     .replace(/[-_]/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    .replace(/\b\w/g, letter => letter.toUpperCase());
 }
 
 function getMediaDate(item) {
-  const timestamp = item.createdAt;
-
-  if (timestamp?.toMillis) return timestamp.toMillis();
-
-  if (timestamp instanceof Date) return timestamp.getTime();
-
+  if (item.createdAt?.toMillis) return item.createdAt.toMillis();
+  if (item.createdAt instanceof Date) return item.createdAt.getTime();
   return 0;
 }
 
@@ -58,7 +56,7 @@ function getThumbnail(item) {
 function matchesCategory(item) {
   if (activeCategory === "all") return true;
 
-  if (activeCategory === "video" || activeCategory === "photo") {
+  if (activeCategory === "photo" || activeCategory === "video") {
     return normalize(item.type) === activeCategory;
   }
 
@@ -68,72 +66,65 @@ function matchesCategory(item) {
 function matchesSearch(item) {
   if (!searchText) return true;
 
-  const searchableText = [
+  const searchable = [
     item.title,
     item.description,
     item.category,
     item.type
   ].map(normalize).join(" ");
 
-  return searchableText.includes(searchText);
+  return searchable.includes(searchText);
 }
 
 function createCard(item) {
-  const id = escapeHTML(item.id);
-  const title = escapeHTML(item.title || "Untitled");
-  const description = escapeHTML(item.description || "");
-  const category = escapeHTML(formatCategory(item.category || "General"));
-  const type = normalize(item.type);
-  const thumbnail = getThumbnail(item);
-
   const card = document.createElement("article");
   card.className = "ve-media-card";
 
-  const openButton = document.createElement("button");
-  openButton.type = "button";
-  openButton.className = "ve-media-open";
-  openButton.dataset.mediaId = item.id;
-  openButton.setAttribute("aria-label", `Open ${item.title || "media"}`);
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "ve-media-open";
+  button.dataset.mediaId = item.id;
+  button.setAttribute("aria-label", `Open ${item.title || "media"}`);
+
+  const thumbnail = getThumbnail(item);
 
   if (thumbnail) {
-    const image = document.createElement("img");
-    image.className = "ve-media-thumb";
-    image.src = thumbnail;
-    image.alt = item.title || "ViralEra media";
-    image.loading = "lazy";
-    image.decoding = "async";
-    image.draggable = false;
+    const img = document.createElement("img");
+    img.className = "ve-media-thumb";
+    img.src = thumbnail;
+    img.alt = item.title || "ViralEra media";
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.draggable = false;
 
-    image.addEventListener("error", () => {
-      image.remove();
+    img.addEventListener("error", () => {
+      img.remove();
 
-      if (!openButton.querySelector(".ve-card-placeholder")) {
-        const placeholder = document.createElement("div");
-        placeholder.className = "ve-card-placeholder";
-        placeholder.textContent = type === "video" ? "▶" : "✦";
-        openButton.prepend(placeholder);
-      }
+      const placeholder = document.createElement("div");
+      placeholder.className = "ve-card-placeholder";
+      placeholder.textContent = item.type === "video" ? "▶" : "✦";
+      button.prepend(placeholder);
     }, { once: true });
 
-    openButton.appendChild(image);
+    button.appendChild(img);
   } else {
     const placeholder = document.createElement("div");
     placeholder.className = "ve-card-placeholder";
-    placeholder.textContent = type === "video" ? "▶" : "✦";
-    openButton.appendChild(placeholder);
+    placeholder.textContent = item.type === "video" ? "▶" : "✦";
+    button.appendChild(placeholder);
   }
 
-  const typeBadge = document.createElement("span");
-  typeBadge.className = "ve-media-type";
-  typeBadge.textContent = type === "video" ? "Video" : "Photo";
-  openButton.appendChild(typeBadge);
+  const badge = document.createElement("span");
+  badge.className = "ve-media-type";
+  badge.textContent = item.type === "video" ? "Video" : "Photo";
+  button.appendChild(badge);
 
-  if (type === "video") {
+  if (item.type === "video") {
     const playIcon = document.createElement("span");
     playIcon.className = "ve-play-icon";
     playIcon.textContent = "▶";
     playIcon.setAttribute("aria-hidden", "true");
-    openButton.appendChild(playIcon);
+    button.appendChild(playIcon);
   }
 
   const info = document.createElement("div");
@@ -142,21 +133,21 @@ function createCard(item) {
   const heading = document.createElement("h3");
   heading.textContent = item.title || "Untitled";
 
-  const descriptionElement = document.createElement("p");
-  descriptionElement.textContent = item.description || "";
+  const description = document.createElement("p");
+  description.textContent = item.description || "";
 
-  const categoryElement = document.createElement("span");
-  categoryElement.className = "ve-card-category";
-  categoryElement.textContent = category;
+  const category = document.createElement("span");
+  category.className = "ve-card-category";
+  category.textContent = formatCategory(item.category || "General");
 
-  info.append(heading);
+  info.appendChild(heading);
 
-  if (description) {
-    info.append(descriptionElement);
+  if (item.description) {
+    info.appendChild(description);
   }
 
-  info.append(categoryElement);
-  card.append(openButton, info);
+  info.appendChild(category);
+  card.append(button, info);
 
   return card;
 }
@@ -164,7 +155,7 @@ function createCard(item) {
 function renderGallery() {
   if (!galleryGrid) return;
 
-  const filtered = allMedia.filter((item) =>
+  const filtered = allMedia.filter(item =>
     matchesCategory(item) && matchesSearch(item)
   );
 
@@ -175,14 +166,14 @@ function renderGallery() {
       `${filtered.length} ${filtered.length === 1 ? "item" : "items"}`;
   }
 
-  if (filtered.length === 0) {
-    const emptyMessage = document.createElement("div");
-    emptyMessage.className = "ve-empty";
-    emptyMessage.textContent = allMedia.length
-      ? "Is search ya category mein media nahi mila. Dusra filter try karo."
-      : "Abhi gallery mein media nahi hai. Admin dashboard se photo ya video publish karo.";
+  if (!filtered.length) {
+    const message = document.createElement("div");
+    message.className = "ve-empty";
+    message.textContent = allMedia.length
+      ? "Is category ya search mein media nahi mila."
+      : "Abhi koi published media nahi hai. Admin panel se media publish karo.";
 
-    galleryGrid.appendChild(emptyMessage);
+    galleryGrid.appendChild(message);
 
     if (emptyState) emptyState.hidden = true;
     galleryGrid.setAttribute("aria-busy", "false");
@@ -191,27 +182,25 @@ function renderGallery() {
 
   const fragment = document.createDocumentFragment();
 
-  filtered.forEach((item) => {
+  filtered.forEach(item => {
     fragment.appendChild(createCard(item));
   });
 
   galleryGrid.appendChild(fragment);
+  galleryGrid.setAttribute("aria-busy", "false");
 
   if (emptyState) emptyState.hidden = true;
-  galleryGrid.setAttribute("aria-busy", "false");
 }
 
-function setActiveCategory(button) {
-  categoryFilters?.querySelectorAll("[data-category]").forEach((item) => {
-    const active = item === button;
-
-    item.classList.toggle("active", active);
-    item.setAttribute("aria-pressed", String(active));
+function setActiveCategory(selectedButton) {
+  categoryFilters?.querySelectorAll("[data-category]").forEach(button => {
+    const active = button === selectedButton;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
   });
 }
 
-// Category filtering
-categoryFilters?.addEventListener("click", (event) => {
+categoryFilters?.addEventListener("click", event => {
   const button = event.target.closest("[data-category]");
   if (!button) return;
 
@@ -220,16 +209,14 @@ categoryFilters?.addEventListener("click", (event) => {
   renderGallery();
 });
 
-// Live search
 searchInput?.addEventListener("input", () => {
   searchText = normalize(searchInput.value);
   renderGallery();
 });
 
-// Live Firestore gallery updates
 function startGallery() {
   if (!galleryGrid) {
-    console.error("galleryGrid element missing from index.html");
+    console.error("galleryGrid element index.html mein nahi mila.");
     return;
   }
 
@@ -240,46 +227,51 @@ function startGallery() {
   loading.textContent = "Loading ViralEra gallery...";
   galleryGrid.replaceChildren(loading);
 
-  unsubscribe = onSnapshot(
+  // IMPORTANT: query only published documents.
+  const publishedQuery = query(
     collection(db, MEDIA_COLLECTION),
-    (snapshot) => {
+    where("published", "==", true)
+  );
+
+  unsubscribe = onSnapshot(
+    publishedQuery,
+    snapshot => {
       allMedia = snapshot.docs
-        .map((document) => ({
+        .map(document => ({
           id: document.id,
           ...document.data()
         }))
-        .filter((item) =>
-          item.published === true &&
+        .filter(item =>
           typeof item.mediaUrl === "string" &&
+          item.mediaUrl.length > 0 &&
           ["photo", "video"].includes(normalize(item.type))
         )
         .sort((a, b) => getMediaDate(b) - getMediaDate(a));
 
       renderGallery();
     },
-    (error) => {
-      console.error("ViralEra gallery error:", error);
+    error => {
+      console.error("ViralEra Firestore error:", error);
 
       galleryGrid.replaceChildren();
 
-      const errorMessage = document.createElement("div");
-      errorMessage.className = "ve-empty";
-      errorMessage.textContent =
-        "Gallery load nahi hui. Internet connection aur Firestore Rules check karo.";
+      const message = document.createElement("div");
+      message.className = "ve-empty";
+      message.textContent =
+        "Gallery load nahi hui. Firestore Rules, collection name aur internet check karo.";
 
-      galleryGrid.appendChild(errorMessage);
+      galleryGrid.appendChild(message);
       galleryGrid.setAttribute("aria-busy", "false");
 
-      if (galleryCount) galleryCount.textContent = "Unable to load";
+      if (galleryCount) galleryCount.textContent = "Load error";
     }
   );
 }
 
 startGallery();
 
-// Stop the live listener if this page is ever unloaded.
 window.addEventListener("pagehide", () => {
-  if (typeof unsubscribe === "function") {
+  if (unsubscribe) {
     unsubscribe();
     unsubscribe = null;
   }
